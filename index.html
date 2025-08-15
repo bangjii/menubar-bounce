@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magic Menu Indicator</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+:root {
+    --clr: #222327;
+}
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #fff;
+}
+.navigation {
+    width: 100%;
+    max-width: 100%;
+    height: 70px;
+    background: #cbcbcb;
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px 10px 0 0;
+}
+.navigation ul {
+    display: flex;
+    width: 350px;
+    position: relative;
+}
+.navigation ul li {
+    position: relative;
+    list-style: none;
+    width: 70px;
+    height: 70px;
+    z-index: 1;
+}
+.navigation ul li a {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+    font-weight: 500;
+    text-decoration: none;
+}
+.navigation ul li a .icon {
+    line-height: 75px;
+    font-size: 1.5em;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), color 0.3s ease;
+    color: var(--clr);
+}
+.navigation ul li.active a .icon {
+    transform: translateY(-32px) scale(1.2); /* icon ikut bounce */
+}
+.navigation ul li a .text {
+    position: absolute;
+    color: var(--clr);
+    font-weight: 400;
+    font-size: 0.75em;
+    letter-spacing: 0.05em;
+    transition: 0.5s;
+    opacity: 0;
+    transform: translateY(20px);
+}
+.navigation ul li.active a .text {
+    opacity: 1;
+    transform: translateY(10px);
+}
+.indicator {
+    position: absolute;
+    top: -35px; /* Desktop fix */
+    width: 65px;
+    height: 65px;
+    background: #ed7676;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), top 0.5s ease, width 0.5s ease, height 0.5s ease, background 0.5s ease, border 0.5s ease;
+    pointer-events: none;
+    z-index: 0;
+}
+.indicator::before,
+.indicator::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+}
+.indicator::before {
+    left: -22px;
+    border-top-right-radius: 20px;
+    box-shadow: 1px -10px 0 0 #fff;
+}
+.indicator::after {
+    right: -22px;
+    border-top-left-radius: 20px;
+    box-shadow: -1px -10px 0 0 #fff;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .navigation {
+        height: 68px;
+        border-radius: 15px 15px 0 0;
+    }
+    .navigation ul {
+        width: 90%; /* Sesuai lebar layar */
+    }
+    .navigation ul li {
+        flex: 1;
+        height: 75px;
+    }
+    .navigation ul li a .icon {
+        line-height: 75px;
+        font-size: 1.35em; /* 10% lebih kecil */
+        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), color 0.3s ease;
+    }
+    .navigation ul li.active a .icon {
+        transform: translateY(-28px) scale(1.2);
+    }
+    .navigation ul li a .text {
+        font-size: 0.7em; /* 10% lebih kecil */
+    }
+    .navigation ul li.active a .text {
+        transform: translateY(12px);
+    }
+    /* Indikator mobile fix */
+    .indicator {
+        top: -28px; /* Turunin biar pas */
+        width: 63px; /* 10% lebih kecil */
+        height: 63px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="navigation">
+    <ul>
+        <li class="list active">
+            <a href="#">
+                <span class="icon"><ion-icon name="home-outline"></ion-icon></span>
+                <span class="text">Home</span>
+            </a>
+        </li>
+        <li class="list">
+            <a href="#">
+                <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
+                <span class="text">Profile</span>
+            </a>
+        </li>
+        <li class="list">
+            <a href="#">
+                <span class="icon"><ion-icon name="chatbubble-outline"></ion-icon></span>
+                <span class="text">Messages</span>
+            </a>
+        </li>
+        <li class="list">
+            <a href="#">
+                <span class="icon"><ion-icon name="camera-outline"></ion-icon></span>
+                <span class="text">Photos</span>
+            </a>
+        </li>
+        <li class="list">
+            <a href="#">
+                <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
+                <span class="text">Settings</span>
+            </a>
+        </li>
+        <div class="indicator"></div>
+    </ul>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const listItems = document.querySelectorAll(".navigation ul li");
+    const indicator = document.querySelector(".indicator");
+    const navUL = document.querySelector(".navigation ul");
+
+    function moveIndicator() {
+        const activeIcon = document.querySelector(".navigation ul li.active .icon");
+        if (!activeIcon) return;
+
+        const iconRect = activeIcon.getBoundingClientRect();
+        const navRect = navUL.getBoundingClientRect();
+
+        const iconCenter = iconRect.left + iconRect.width / 2;
+        const navLeft = navRect.left;
+
+        const relativeCenter = iconCenter - navLeft;
+        const offset = relativeCenter - (indicator.offsetWidth / 2);
+
+        indicator.style.transform = `translateX(${offset}px)`;
+    }
+
+    listItems.forEach(item => {
+        item.addEventListener("click", () => {
+            listItems.forEach(li => li.classList.remove("active"));
+            item.classList.add("active");
+            moveIndicator();
+        });
+    });
+
+    window.addEventListener("resize", moveIndicator);
+    moveIndicator();
+});
+</script>
+
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+</body>
+</html>
